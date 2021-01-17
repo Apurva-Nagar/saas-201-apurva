@@ -21,6 +21,10 @@ class Todo < ActiveRecord::Base
     puts "\n\n"
   end
 
+  def self.add_task(todo_hash)
+    Todo.create!(todo_text: todo_hash[:todo_text], due_date: Date.today + todo_hash[:due_in_days].to_i, completed: false)
+  end
+
   def to_displayable_string
     display_status = completed ? "[X]" : "[ ]"
     display_date = due_today? ? nil : due_date
