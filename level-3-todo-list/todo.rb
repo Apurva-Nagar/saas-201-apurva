@@ -20,10 +20,11 @@ class Todo
   end
 
   def to_displayable_string
+    completed_status = @completed ? "[X]" : "[ ]"
     if self.due_today?
-      "#{@text}"
+      "#{completed_status} #{@text}"
     else
-      "#{@text} #{@due_date}"
+      "#{completed_status} #{@text} #{@due_date}"
     end
   end
 end
@@ -50,7 +51,7 @@ class TodosList
   end
 
   def to_displayable_list
-    todos_list = @todos.map { |todo| "[ ] #{todo.to_displayable_string}" }
+    todos_list = @todos.map { |todo| "#{todo.to_displayable_string}" }
     todos_list.join("\n")
   end
 end
