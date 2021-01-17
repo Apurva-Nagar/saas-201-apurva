@@ -21,26 +21,24 @@ dns_raw = File.readlines("zone")
 def parse_dns(dns_raw)
   dns_cleaned = dns_raw.reject { |s| s.strip.empty? || s.start_with?("#") }
   dns_hash = {}
-  # SOURCE => [RECORD TYPE, DESTINATION]
-  dns_cleaned.map { |s| dns_hash[s.split(",")[1].strip] = [s.split(",")[0].strip, s.split(",")[2].strip] }
+  # { SOURCE => { :type => RECORD TYPE, :target => DESTINATION} }
+  dns_cleaned.map { |s| dns_hash[s.split(",")[1].strip] = { :type => s.split(",")[0].strip, :target => s.split(",")[2].strip } }
   return dns_hash
 end
 
 def resolve(dns_records, lookup_chain, domain)
-  begin
-    destination = dns_records[domain][1]
-    record_type = dns_records[domain][0]
-  rescue
+  record = dns_records[domain]
+  if (!record)
     lookup_chain.push("ERROR: Unkown record type or alias non-existant.")
     return lookup_chain
-  end
-
-  lookup_chain.push(destination)
-
-  if record_type == "CNAME"
-    resolve(dns_records, lookup_chain, destination)
-  elsif record_type == "A"
+  elsif record[:type] == "CNAME"
+    lookup_chain.push(record[:target])
+    resolve(dns_records, lookup_chain, record[:target])
+  elsif record[:type] == "A"
+    lookup_chain.push(record[:target])
     return lookup_chain
+  else
+    lookup_chain.push("Invalid record type")
   end
 end
 
