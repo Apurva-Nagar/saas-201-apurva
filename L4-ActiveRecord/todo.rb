@@ -22,7 +22,7 @@ class Todo < ActiveRecord::Base
   end
 
   def self.add_task(todo_hash)
-    Todo.create!(todo_text: todo_hash[:todo_text], due_date: Date.today + todo_hash[:due_in_days].to_i, completed: false)
+    Todo.create!(todo_text: todo_hash[:todo_text], due_date: Date.today + todo_hash[:due_in_days], completed: false)
   end
 
   def to_displayable_string
